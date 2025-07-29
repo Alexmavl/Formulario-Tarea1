@@ -57,7 +57,6 @@ const Form = () => {
         }));
       }
     } else {
-      // HTMLSelectElement
       setFormData((prev) => ({
         ...prev,
         [name as keyof FormData]: value,
@@ -65,22 +64,40 @@ const Form = () => {
     }
   };
 
-  const handleSubmit = async (e: React.FormEvent) => {
+  const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
-    try {
-      // Simulando el envío - aquí pondrías tu llamada a axios
-      console.log("Datos del formulario:", formData);
-      alert("Formulario enviado correctamente");
-    } catch (error) {
-      console.error("Error al enviar el formulario:", error);
-      alert("Error al enviar el formulario");
-    }
+
+    const form = document.createElement('form');
+    form.action = "https://script.google.com/macros/s/AKfycbySl9x-qanaGYFQjyJnJlHmVx7Ft6vwsicNqiA9xcVpClW-uXK33KEownjdFQujbWE/exec";
+    form.method = "POST";
+    form.style.display = "none";
+
+    const addField = (name: string, value: string) => {
+      const input = document.createElement('input');
+      input.name = name;
+      input.value = value;
+      form.appendChild(input);
+    };
+
+    addField("nombre", formData.nombre);
+    addField("apellido", formData.apellido);
+    addField("deportefavorito", formData.deportefavorito);
+    addField("genero", formData.genero);
+    addField("residente", formData.residente);
+    addField("isOlder", formData.isOlder ? "1" : "0");
+    addField("Ford", formData.carModels.Ford ? "1" : "0");
+    addField("Toyota", formData.carModels.Toyota ? "1" : "0");
+    addField("Chrysler", formData.carModels.Chrysler ? "1" : "0");
+    addField("Nissan", formData.carModels.Nissan ? "1" : "0");
+
+    document.body.appendChild(form);
+    form.submit();
+    document.body.removeChild(form);
   };
 
   return (
     <div className="form-container">
       <div className="form-card">
-        {/* Header */}
         <div className="form-header">
           <h2 className="form-title">Actualizar información</h2>
           <p className="form-subtitle">
@@ -88,11 +105,9 @@ const Form = () => {
           </p>
         </div>
 
-        <div className="form-content" onSubmit={handleSubmit}>
-          {/* Información Personal */}
+        <form className="form-content" onSubmit={handleSubmit}>
           <div className="form-section personal">
             <h3 className="section-title">📋 Información Personal</h3>
-            
             <div className="form-grid">
               <div className="form-field">
                 <label className="form-label">Nombre</label>
@@ -104,7 +119,6 @@ const Form = () => {
                   className="form-input"
                 />
               </div>
-
               <div className="form-field">
                 <label className="form-label">Apellido</label>
                 <input
@@ -117,38 +131,28 @@ const Form = () => {
               </div>
             </div>
 
-            {/* Género */}
             <div className="form-field">
               <label className="form-label">Género</label>
               <div className="radio-group">
-                {[
-                  { value: 'masculino', label: 'Masculino' },
-                  { value: 'femenino', label: 'Femenino' },
-                  { value: 'otro', label: 'Otro' }
-                ].map((option) => (
-                  <label 
-                    key={option.value} 
-                    className={`radio-option ${formData.genero === option.value ? 'selected' : ''}`}
-                  >
+                {['masculino', 'femenino', 'otro'].map((option) => (
+                  <label key={option} className={`radio-option ${formData.genero === option ? 'selected' : ''}`}>
                     <input
                       type="radio"
                       name="genero"
-                      value={option.value}
-                      checked={formData.genero === option.value}
+                      value={option}
+                      checked={formData.genero === option}
                       onChange={handleChange}
                       className="radio-input"
                     />
-                    {option.label}
+                    {option.charAt(0).toUpperCase() + option.slice(1)}
                   </label>
                 ))}
               </div>
             </div>
           </div>
 
-          {/* Preferencias */}
           <div className="form-section preferences">
             <h3 className="section-title">🏆 Preferencias</h3>
-
             <div className="form-grid">
               <div className="form-field">
                 <label className="form-label">Deporte Favorito</label>
@@ -158,12 +162,11 @@ const Form = () => {
                   onChange={handleChange}
                   className="form-select"
                 >
-                  <option value="basketball">Basquet ball</option>
-                  <option value="football">Football</option>
-                  <option value="tennis">Tennis</option>
+                  <option value="basketball">Basketball</option>
+                  <option value="football">Fútbol</option>
+                  <option value="tennis">Tenis</option>
                 </select>
               </div>
-
               <div className="form-field">
                 <label className="form-label">Residente del Departamento</label>
                 <select
@@ -172,32 +175,17 @@ const Form = () => {
                   onChange={handleChange}
                   className="form-select"
                 >
-                  <option value="Guatemala">Guatemala</option>
-                  <option value="Santa Rosa">Santa Rosa</option>
-                  <option value="Jutiapa">Jutiapa</option>
-                  <option value="Escuintla">Escuintla</option>
-                  <option value="Suchitepequez">Suchitepequez</option>
-                  <option value="Quetzaltenango">Quetzaltenango</option>
-                  <option value="San Marcos">San Marcos</option>
-                  <option value="Huehuetenango">Huehuetenango</option>
-                  <option value="Quiche">Quiché</option>
-                  <option value="Alta Verapaz">Alta Verapaz</option>
-                  <option value="Baja Verapaz">Baja Verapaz</option>
-                  <option value="El Progeso">El Progreso</option>
-                  <option value="Chiquimula">Chiquimula</option>
-                  <option value="Zacapa">Zacapa</option>
-                  <option value="Izabal">Izabal</option>
-                  <option value="Petén">Petén</option>
+                  {["Guatemala", "Santa Rosa", "Jutiapa", "Escuintla", "Suchitepequez", "Quetzaltenango", "San Marcos", "Huehuetenango", "Quiche", "Alta Verapaz", "Baja Verapaz", "El Progreso", "Chiquimula", "Zacapa", "Izabal", "Petén"].map(dep => (
+                    <option key={dep} value={dep}>{dep}</option>
+                  ))}
                 </select>
               </div>
             </div>
           </div>
 
-          {/* Información Adicional */}
           <div className="form-section additional">
             <h3 className="section-title">🚗 Información Adicional</h3>
 
-            {/* Edad */}
             <label className={`age-checkbox ${formData.isOlder ? 'checked' : ''}`}>
               <input
                 type="checkbox"
@@ -212,13 +200,12 @@ const Form = () => {
               21 años o más
             </label>
 
-            {/* Tipos de automóvil */}
             <div className="form-field">
               <label className="form-label">Tipos de automóvil que posee</label>
               <div className="car-grid">
                 {(Object.keys(formData.carModels) as CarModel[]).map((brand) => (
-                  <label 
-                    key={brand} 
+                  <label
+                    key={brand}
                     className={`car-option ${formData.carModels[brand] ? 'selected' : ''}`}
                   >
                     <input
@@ -238,15 +225,10 @@ const Form = () => {
             </div>
           </div>
 
-          {/* Submit Button */}
-          <button
-            type="submit"
-            onClick={handleSubmit}
-            className="submit-button"
-          >
+          <button type="submit" className="submit-button">
             💾 Guardar Cambios
           </button>
-        </div>
+        </form>
       </div>
     </div>
   );
