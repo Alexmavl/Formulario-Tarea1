@@ -112,7 +112,7 @@ const Form = () => {
         confirmButtonColor: '#3085d6',
       });
 
-      setFormData(initialFormState); // 🧹 Limpiar formulario después del envío
+      setFormData(initialFormState); 
     }, 1000);
   };
 
