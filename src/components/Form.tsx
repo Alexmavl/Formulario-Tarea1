@@ -1,4 +1,5 @@
 import { useState } from "react";
+import Swal from 'sweetalert2';
 
 // Definir tipos
 type CarModel = 'Ford' | 'Chrysler' | 'Toyota' | 'Nissan';
@@ -14,7 +15,7 @@ interface FormData {
 }
 
 const Form = () => {
-  const [formData, setFormData] = useState<FormData>({
+  const initialFormState: FormData = {
     nombre: "",
     apellido: "",
     deportefavorito: "basketball",
@@ -27,7 +28,9 @@ const Form = () => {
       Toyota: false,
       Nissan: false,
     },
-  });
+  };
+
+  const [formData, setFormData] = useState<FormData>(initialFormState);
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>) => {
     const target = e.target;
@@ -67,15 +70,22 @@ const Form = () => {
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
 
+    const iframe = document.createElement("iframe");
+    iframe.name = "hidden_iframe";
+    iframe.style.display = "none";
+    document.body.appendChild(iframe);
+
     const form = document.createElement('form');
-    form.action = "https://script.google.com/macros/s/AKfycbySl9x-qanaGYFQjyJnJlHmVx7Ft6vwsicNqiA9xcVpClW-uXK33KEownjdFQujbWE/exec";
+    form.action = "https://script.google.com/macros/s/AKfycbwCfyJVFuVaUVx_kU6AyOxiP_ESxJtvTuLrPyPdtPqId8yQV-01gUXh0Q6qL15r0AM5/exec";
     form.method = "POST";
+    form.target = "hidden_iframe";
     form.style.display = "none";
 
     const addField = (name: string, value: string) => {
       const input = document.createElement('input');
       input.name = name;
       input.value = value;
+      input.type = "hidden";
       form.appendChild(input);
     };
 
@@ -93,6 +103,17 @@ const Form = () => {
     document.body.appendChild(form);
     form.submit();
     document.body.removeChild(form);
+
+    setTimeout(() => {
+      Swal.fire({
+        icon: 'success',
+        title: '¡Datos enviados!',
+        text: 'Tu información se ha guardado correctamente.',
+        confirmButtonColor: '#3085d6',
+      });
+
+      setFormData(initialFormState); // 🧹 Limpiar formulario después del envío
+    }, 1000);
   };
 
   return (
